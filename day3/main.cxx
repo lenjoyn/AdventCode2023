@@ -21,14 +21,14 @@ struct dim
 
 bool isSymbol(char c)
 {
-        return (!isdigit(c) && c!='.') ? true : false;
+        return (!isdigit(c) && c!='.' && c!='\0') ? true : false;
 }
 
 int main()
 {
     auto t1 = high_resolution_clock::now();
 
-    std::ifstream myfile("test.txt");
+    std::ifstream myfile("inputs.txt");
     std::string myline;
     std::vector<string> lines;
     
@@ -38,7 +38,6 @@ int main()
     while (myfile)
     {
         std::getline(myfile, myline);
-        std::cout<<myline<<std::endl;
         lines.push_back(myline);
         num = 0;
         int begin = -1;
@@ -74,27 +73,27 @@ int main()
         bool a_part = false;
         int z = dims[i].line;
         int x = dims[i].start == 0 ? 0: dims[i].start - 1;
-        int y = dims[i].end == lines[i].length()-1 ? lines[i].length() - 1 : dims[i].end + 1;
-    
-        for (int j = z-1 ; (j < z+1 && !a_part) ; ++j)
+        int y = dims[i].end == 139 ? 139 : dims[i].end + 1;
+       
+        for (int j = z-1 ; j <= z+1 ; ++j)
         {
             if (j < 0)
                 continue;
-            if (j == lines.size())
+            if (j == lines.size() - 1)
                 break;
 
-            for (int k = x; (k < y && !a_part); ++k)
+            for (int k = x; k <= y ; ++k)
             {
-                std::cout<<nums[i]<<" "<<j<<" "<<k<<std::endl;
+                
                 if (!isSymbol(lines[j][k]))
                     continue;
 
+                
                 a_part = true;
             }
         }
         if (a_part)
         {
-            std::cout<<nums[i]<<std::endl;
             sum += nums[i];    
         }
     }
