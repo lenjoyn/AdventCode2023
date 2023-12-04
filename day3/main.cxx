@@ -21,17 +21,16 @@ struct dim
 
 bool isSymbol(char c)
 {
-        return (!isdigit(c) && c!='.' && c!='\0') ? true : false;
+        return ((!isdigit(c) && c!='.' && c!='\0') || c =='w' || c=='x' || c=='o')  ? true : false;
 }
 
-int main()
+void part1()
 {
-    auto t1 = high_resolution_clock::now();
-
     std::ifstream myfile("inputs.txt");
     std::string myline;
     std::vector<string> lines;
-    
+    int gears[140][140] = {0};
+
     vector<dim> dims;
     vector<int> nums;
     int num;
@@ -44,7 +43,7 @@ int main()
         for (int i = 0; i< myline.length(); ++i)
         {
             char c = myline[i];
-           
+
             if (isdigit(c))
             {
                 num = num*10 + int(c&0xf);
@@ -63,18 +62,19 @@ int main()
                 dims.push_back(dim(lines.size()-1, begin, i-1));
                 begin = -1;
                 num = 0;
-            }
+            }   
         }
     }
 
     int sum = 0;
+    int gear_sum = 0;
     for (int i =0; i < dims.size(); ++i)
     {
         bool a_part = false;
         int z = dims[i].line;
         int x = dims[i].start == 0 ? 0: dims[i].start - 1;
         int y = dims[i].end == 139 ? 139 : dims[i].end + 1;
-       
+
         for (int j = z-1 ; j <= z+1 ; ++j)
         {
             if (j < 0)
@@ -84,20 +84,45 @@ int main()
 
             for (int k = x; k <= y ; ++k)
             {
-                
+
                 if (!isSymbol(lines[j][k]))
                     continue;
 
-                
                 a_part = true;
+
+                if (lines[j][k] == '*')
+                {
+                    gears[j][k] = nums[i];
+                    lines[j][k] = 'w';
+                }
+                else if (lines[j][k] == 'w')
+                {
+                    gears[j][k] = gears[j][k]*nums[i];
+                    gear_sum += gears[j][k];
+                    lines[j][k] = 'o';
+                }
+                else if (lines[j][k] == 'o')
+                {
+                    gear_sum -= gears[j][k];
+                    gears[j][k] = 0;
+                    lines[j][k] = 'x';
+                }
             }
         }
         if (a_part)
         {
-            sum += nums[i];    
+            sum += nums[i];
         }
     }
     std::cout<<sum<<std::endl;
+    std::cout<<gear_sum<<std::endl;
+}
+
+int main()
+{
+    auto t1 = high_resolution_clock::now();
+   
+    part1();
     auto t2 = high_resolution_clock::now();
     /* Getting number of milliseconds as an integer. */
     auto ms_int = duration_cast<milliseconds>(t2 - t1);
